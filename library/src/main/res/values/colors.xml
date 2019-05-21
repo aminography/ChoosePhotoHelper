@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="textColorPrimary">#212121</color>
+
+    <color name="colorControlHighlight">#DFDFDF</color>
+    <color name="rippleColorHighlight">#7F717171</color>
+    <color name="pressColorHighlight">#1F515151</color>
+    <color name="focusColorHighlight">#1F717171</color>
+
+</resources>

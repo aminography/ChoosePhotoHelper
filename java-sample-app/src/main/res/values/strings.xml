@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ChoosePhotoHelper in Java</string>
+    <string name="show_photo_chooser">Show Photo Chooser</string>
+</resources>

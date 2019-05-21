@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ChoosePhotoHelper in Kotlin</string>
+    <string name="show_photo_chooser">Show Photo Chooser</string>
+</resources>

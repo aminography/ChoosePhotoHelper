@@ -1,0 +1,15 @@
+<resources>
+
+    <string name="app_name">library</string>
+    <string name="required_permission_is_not_granted">Required permission is not granted!</string>
+    <string name="required_permissions_are_not_granted">Required permissions are not granted!</string>
+    <string name="pick_photo_rationale">Picking a photo from gallery needs external storage permission!</string>
+    <string name="take_photo_rationale">Taking a photo needs camera and external storage permissions!</string>
+    <string name="action_close">Close</string>
+    <string name="action_ok">OK</string>
+    <string name="camera">Take a photo</string>
+    <string name="gallery">Choose from gallery</string>
+    <string name="remove_photo">Remove current photo</string>
+    <string name="choose_photo_using">Choose photo using …</string>
+
+</resources>
