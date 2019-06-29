@@ -32,11 +32,7 @@ class MainActivity : AppCompatActivity() {
         choosePhotoHelper.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         choosePhotoHelper.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
