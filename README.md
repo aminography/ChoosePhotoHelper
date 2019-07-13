@@ -11,7 +11,9 @@ It also internally handles some issues like rotation correction of the taken pho
 | `asUri()` | `Uri` |
 | `asBitmap()` | `Bitmap` |
 
-![](https://media.giphy.com/media/H88UXvL0jqL4HS2vuJ/giphy.gif)
+| Take Photo | Pick Photo |
+| --- | --- |
+| ![](https://media.giphy.com/media/KdBwb36QCTsgKbUftB/giphy.gif) | ![](https://media.giphy.com/media/H88UXvL0jqL4HS2vuJ/giphy.gif) |
 
 <br/>
 
