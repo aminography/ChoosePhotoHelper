@@ -2,6 +2,14 @@
 
 **`ChoosePhotoHelper`** develops a component which facilitates the source code of picking photos in your Android apps. By using it, it's possible to pick photos from gallery or take an image with the camera without any boilerplate codes.
 
+It provides three ways to access the chosen photo:
+
+| Builder Method | Result Type |
+| --- | --- |
+| `asFilePath()` | `String` |
+| `asUri()` | `Uri` |
+| `asBitmap()` | `Bitmap` |
+
 # Usage
 
 Here is an example showing how to use `ChoosePhotoHelper`:
