@@ -52,9 +52,10 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
 choosePhotoHelper.showChooser();
 ```
 
+<br/>
+
 Here is a detailed example in **kotlin** showing how to use `ChoosePhotoHelper`:
 
-> Kotlin
 ```kotlin
 class MainActivity : AppCompatActivity() {
 
