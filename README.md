@@ -35,7 +35,7 @@ First of all, **`ChoosePhotoHelper`** provides 3 types of result to access the c
 | `asUri()` | `Uri` |
 | `asBitmap()` | `Bitmap` |
 
-Then, use **`ChoosePhotoHelper`** simply in 3 steps:
+Then, use it simply in 3 steps:
 
 ### • First
 Create an instance of **`ChoosePhotoHelper`** using its builder pattern specifying the result type:
