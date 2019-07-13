@@ -1,7 +1,7 @@
 # ChoosePhotoHelper
 
 **`ChoosePhotoHelper`** develops a component which facilitates the source code of picking photos in your Android apps. By using it, it's possible to pick photos from gallery or take an image with the camera without any boilerplate codes.
-It also internally handles some issues like **rotation correction of the taken photos**, **permission request for camera and gallery**, etc.
+It also internally handles some issues like **rotation correction of the taken photos**, **permission request** for camera and gallery if needed, etc.
 
 | Take a Photo | Choose from Gallery |
 | --- | --- |
