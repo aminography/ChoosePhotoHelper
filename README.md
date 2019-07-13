@@ -12,8 +12,8 @@
 
 <br/>
 
-# Download
-
+Download
+--------
 **`ChoosePhotoHelper`** is available on [bintray](https://bintray.com/aminography/maven/ChoosePhotoHelper) to download using build tools systems. Add the following lines to your `build.gradle` file:
 
 ```gradle
@@ -28,8 +28,8 @@ dependencies {
 
 <br/>
 
-# Usage
-
+Usage
+-----
 Use **`ChoosePhotoHelper`** simply in 3 steps:
 
 ### • First
