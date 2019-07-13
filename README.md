@@ -57,8 +57,6 @@ Call `showChooser()` method from `choosePhotoHelper` instance:
 choosePhotoHelper.showChooser();
 ```
 
-<br/>
-
 <hr/>
 
 Here is a detailed example in **kotlin** showing how to use `ChoosePhotoHelper`:
