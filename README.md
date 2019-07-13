@@ -4,7 +4,7 @@
 
 It also internally handles some issues like rotation correction of the taken photo, permission request for camera and gallery.
 
-**`ChoosePhotoHelper`** provides 3 types of result to access the chosen photo:
+**`ChoosePhotoHelper`** provides 3 types of result to access the chosen photo which are:
 
 | Builder Method | Result Type |
 | --- | --- |
