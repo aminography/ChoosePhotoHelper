@@ -23,7 +23,6 @@ Create an instance of **`ChoosePhotoHelper`** using its builder pattern specifyi
 choosePhotoHelper = ChoosePhotoHelper.with(activity)
         .asFilePath()
         .build(new ChoosePhotoCallback<String>() {
-
             @Override
             public void onChoose(String photo) {
                 Glide.with(MainActivity.this)
