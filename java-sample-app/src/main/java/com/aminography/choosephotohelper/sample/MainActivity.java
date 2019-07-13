@@ -10,11 +10,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.aminography.choosephotohelper.ChoosePhotoHelper;
+import com.aminography.choosephotohelper.callback.ChoosePhotoCallback;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,16 +26,17 @@ public class MainActivity extends AppCompatActivity {
         final ImageView imageView = findViewById(R.id.imageView);
         final Button button = findViewById(R.id.button);
 
-        choosePhotoHelper = ChoosePhotoHelper.with(this).asFilePath(new Function1<String, Unit>() {
-            @Override
-            public Unit invoke(String s) {
-                Glide.with(MainActivity.this)
-                        .load(s)
-                        .apply(RequestOptions.placeholderOf(R.drawable.default_placeholder))
-                        .into(imageView);
-                return null;
-            }
-        });
+        choosePhotoHelper = ChoosePhotoHelper.with(this)
+                .asFilePath()
+                .build(new ChoosePhotoCallback<String>() {
+                    @Override
+                    public void onChoose(String photo) {
+                        Glide.with(MainActivity.this)
+                                .load(photo)
+                                .apply(RequestOptions.placeholderOf(R.drawable.default_placeholder))
+                                .into(imageView);
+                    }
+                });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

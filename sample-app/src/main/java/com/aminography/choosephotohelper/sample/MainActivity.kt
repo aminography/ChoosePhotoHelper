@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.aminography.choosephotohelper.ChoosePhotoHelper
+import com.aminography.choosephotohelper.callback.ChoosePhotoCallback
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.activity_main.*
@@ -16,12 +17,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        choosePhotoHelper = ChoosePhotoHelper.with(this).asFilePath {
-            Glide.with(this)
-                .load(it)
-                .apply(RequestOptions.placeholderOf(R.drawable.default_placeholder))
-                .into(imageView)
-        }
+        choosePhotoHelper = ChoosePhotoHelper.with(this)
+            .asFilePath()
+            .build(ChoosePhotoCallback {
+                Glide.with(this)
+                    .load(it)
+                    .apply(RequestOptions.placeholderOf(R.drawable.default_placeholder))
+                    .into(imageView)
+            })
 
         button.setOnClickListener {
             choosePhotoHelper.showChooser()

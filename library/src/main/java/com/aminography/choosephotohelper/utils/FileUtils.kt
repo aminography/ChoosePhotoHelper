@@ -1,4 +1,4 @@
-package com.aminography.choosephotohelper
+package com.aminography.choosephotohelper.utils
 
 import android.content.ContentUris
 import android.content.Context
@@ -46,7 +46,12 @@ fun pathFromUri(context: Context, uri: Uri): String? {
                 Uri.parse("content://downloads/public_downloads"),
                 java.lang.Long.valueOf(id)
             )
-            return getDataColumn(context, contentUri, null, null)
+            return getDataColumn(
+                context,
+                contentUri,
+                null,
+                null
+            )
         } else if (isMediaDocument(uri)) {
             val docId = DocumentsContract.getDocumentId(uri)
             val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -60,7 +65,12 @@ fun pathFromUri(context: Context, uri: Uri): String? {
             }
             val selection = "_id=?"
             val selectionArgs = arrayOf(split[1])
-            return getDataColumn(context, contentUri, selection, selectionArgs)
+            return getDataColumn(
+                context,
+                contentUri,
+                selection,
+                selectionArgs
+            )
         }// MediaProvider
         // DownloadsProvider
     } else if ("content".equals(uri.scheme!!, ignoreCase = true)) {

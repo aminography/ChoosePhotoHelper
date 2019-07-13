@@ -1,4 +1,4 @@
-package com.aminography.choosephotohelper
+package com.aminography.choosephotohelper.utils
 
 import android.content.Context
 import android.content.pm.PackageManager

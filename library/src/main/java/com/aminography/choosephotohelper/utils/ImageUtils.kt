@@ -1,4 +1,4 @@
-package com.aminography.choosephotohelper
+package com.aminography.choosephotohelper.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -30,9 +30,18 @@ fun modifyOrientation(bitmap: Bitmap, absolutePath: String): Bitmap {
         ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
 
     return when (orientation) {
-        ExifInterface.ORIENTATION_ROTATE_90 -> rotate(bitmap, 90f)
-        ExifInterface.ORIENTATION_ROTATE_180 -> rotate(bitmap, 180f)
-        ExifInterface.ORIENTATION_ROTATE_270 -> rotate(bitmap, 270f)
+        ExifInterface.ORIENTATION_ROTATE_90 -> rotate(
+            bitmap,
+            90f
+        )
+        ExifInterface.ORIENTATION_ROTATE_180 -> rotate(
+            bitmap,
+            180f
+        )
+        ExifInterface.ORIENTATION_ROTATE_270 -> rotate(
+            bitmap,
+            270f
+        )
         ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> flip(
             bitmap,
             horizontal = true,

@@ -12,6 +12,11 @@ import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AlertDialog
 import android.widget.SimpleAdapter
+import com.aminography.choosephotohelper.callback.ChoosePhotoCallback
+import com.aminography.choosephotohelper.utils.hasPermissions
+import com.aminography.choosephotohelper.utils.modifyOrientation
+import com.aminography.choosephotohelper.utils.pathFromUri
+import com.aminography.choosephotohelper.utils.uriFromFile
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
@@ -25,31 +30,13 @@ import java.util.*
  * Created by aminography on 5/17/2019.
  */
 class ChoosePhotoHelper private constructor(
-    private val activity: Activity
+    private val activity: Activity,
+    private val callback: ChoosePhotoCallback<*>
 ) {
 
-    private lateinit var callback: Any
     private var outputType: OutputType = OutputType.FILE_PATH
     private var filePath: String? = null
     private var cameraFilePath: String? = null
-
-    fun asFilePath(callback: FilePathCallback): ChoosePhotoHelper {
-        this.callback = callback
-        outputType = OutputType.FILE_PATH
-        return this
-    }
-
-    fun asUri(callback: UriCallback): ChoosePhotoHelper {
-        this.callback = callback
-        outputType = OutputType.URI
-        return this
-    }
-
-    fun asBitmap(callback: BitmapCallback): ChoosePhotoHelper {
-        this.callback = callback
-        outputType = OutputType.BITMAP
-        return this
-    }
 
     fun showChooser() {
         AlertDialog.Builder(activity).apply {
@@ -96,12 +83,7 @@ class ChoosePhotoHelper private constructor(
                     1 -> checkAndShowPicker()
                     2 -> {
                         filePath = null
-                        @Suppress("UNCHECKED_CAST")
-                        when (outputType) {
-                            OutputType.FILE_PATH -> (callback as FilePathCallback).invoke(null)
-                            OutputType.URI -> (callback as UriCallback).invoke(null)
-                            OutputType.BITMAP -> (callback as BitmapCallback).invoke(null)
-                        }
+                        callback.onChoose(null)
                     }
                 }
             }
@@ -118,30 +100,36 @@ class ChoosePhotoHelper private constructor(
                     filePath = cameraFilePath
                 }
                 REQUEST_CODE_PICK_PHOTO -> {
-                    filePath = pathFromUri(activity, Uri.parse(intent?.data?.toString()))
+                    filePath = pathFromUri(
+                        activity,
+                        Uri.parse(intent?.data?.toString())
+                    )
                 }
             }
             filePath?.apply {
                 @Suppress("UNCHECKED_CAST")
                 when (outputType) {
                     OutputType.FILE_PATH -> {
-                        (callback as FilePathCallback).invoke(filePath)
+                        (callback as ChoosePhotoCallback<String>).onChoose(filePath)
                     }
                     OutputType.URI -> {
                         val uri = Uri.fromFile(File(filePath))
-                        (callback as UriCallback).invoke(uri)
+                        (callback as ChoosePhotoCallback<Uri>).onChoose(uri)
                     }
                     OutputType.BITMAP -> {
                         doAsync {
                             //                            val bitmapBytes = modifyOrientationAndResize(this@apply)
                             var bitmap = BitmapFactory.decodeFile(this@apply)
                             try {
-                                bitmap = modifyOrientation(bitmap, this@apply)
+                                bitmap = modifyOrientation(
+                                    bitmap,
+                                    this@apply
+                                )
                             } catch (e: IOException) {
                                 e.printStackTrace()
                             }
                             uiThread {
-                                (callback as BitmapCallback).invoke(bitmap)
+                                (callback as ChoosePhotoCallback<Bitmap>).onChoose(bitmap)
                             }
                         }
                     }
@@ -189,7 +177,11 @@ class ChoosePhotoHelper private constructor(
                             ".jpg"
                 takePicture.putExtra(
                     MediaStore.EXTRA_OUTPUT,
-                    uriFromFile(activity, activity.application.packageName, File(cameraFilePath))
+                    uriFromFile(
+                        activity,
+                        activity.application.packageName,
+                        File(cameraFilePath)
+                    )
                 )
                 takePicture.putExtra(MediaStore.EXTRA_SIZE_LIMIT, CAMERA_MAX_FILE_SIZE_BYTE)
                 activity.startActivityForResult(
@@ -211,7 +203,11 @@ class ChoosePhotoHelper private constructor(
     }
 
     private fun checkAndStartCamera() {
-        if (hasPermissions(activity, *TAKE_PHOTO_PERMISSIONS)) {
+        if (hasPermissions(
+                activity,
+                *TAKE_PHOTO_PERMISSIONS
+            )
+        ) {
             onPermissionsGranted(
                 REQUEST_CODE_TAKE_PHOTO_PERMISSION
             )
@@ -225,7 +221,11 @@ class ChoosePhotoHelper private constructor(
     }
 
     private fun checkAndShowPicker() {
-        if (hasPermissions(activity, *PICK_PHOTO_PERMISSIONS)) {
+        if (hasPermissions(
+                activity,
+                *PICK_PHOTO_PERMISSIONS
+            )
+        ) {
             onPermissionsGranted(
                 REQUEST_CODE_PICK_PHOTO_PERMISSION
             )
@@ -244,6 +244,37 @@ class ChoosePhotoHelper private constructor(
         BITMAP
     }
 
+    abstract class BaseRequestBuilder<T> internal constructor(private val activity: Activity) {
+
+        fun build(callback: ChoosePhotoCallback<T>): ChoosePhotoHelper {
+            return ChoosePhotoHelper(activity, callback)
+        }
+    }
+
+    class FilePathRequestBuilder internal constructor(activity: Activity) :
+        BaseRequestBuilder<String>(activity)
+
+    class UriRequestBuilder internal constructor(activity: Activity) :
+        BaseRequestBuilder<Uri>(activity)
+
+    class BitmapRequestBuilder internal constructor(activity: Activity) :
+        BaseRequestBuilder<BitmapRequestBuilder>(activity)
+
+    class RequestBuilder(private val activity: Activity) {
+
+        fun asFilePath(): FilePathRequestBuilder {
+            return FilePathRequestBuilder(activity)
+        }
+
+        fun asUri(): UriRequestBuilder {
+            return UriRequestBuilder(activity)
+        }
+
+        fun asBitmap(): BitmapRequestBuilder {
+            return BitmapRequestBuilder(activity)
+        }
+    }
+
     companion object {
         private const val CAMERA_MAX_FILE_SIZE_BYTE = 2 * 1024 * 1024
         private const val REQUEST_CODE_TAKE_PHOTO = 101
@@ -257,7 +288,7 @@ class ChoosePhotoHelper private constructor(
         const val REQUEST_CODE_PICK_PHOTO_PERMISSION = 104
 
         @JvmStatic
-        fun with(activity: Activity): ChoosePhotoHelper = ChoosePhotoHelper(activity)
+        fun with(activity: Activity): RequestBuilder = RequestBuilder(activity)
     }
 
 }
