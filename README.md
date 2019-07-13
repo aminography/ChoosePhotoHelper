@@ -58,7 +58,7 @@ choosePhotoHelper.showChooser();
 
 <hr/>
 
-Here is a detailed example in **kotlin** showing how to use `ChoosePhotoHelper`:
+Here is a detailed example which is written in **kotlin**:
 
 ```kotlin
 class MainActivity : AppCompatActivity() {
