@@ -2,7 +2,7 @@
 
 **`ChoosePhotoHelper`** develops a component which facilitates the source code of picking photos in your Android apps. By using it, it's possible to pick photos from gallery or take an image with the camera without any boilerplate codes.
 
-**`ChoosePhotoHelper`** provides three types of result to access the chosen photo:
+**`ChoosePhotoHelper`** provides 3 types of result to access the chosen photo:
 
 | Builder Method | Result Type |
 | --- | --- |
@@ -11,6 +11,46 @@
 | `asBitmap()` | `Bitmap` |
 
 # Usage
+
+Use **`ChoosePhotoHelper`** simply in 3 steps:
+
+1. Create an instance of **`ChoosePhotoHelper`** using its builder pattern specifying the result type:
+
+```java
+choosePhotoHelper = ChoosePhotoHelper.with(this)
+        .asFilePath()
+        .build(new ChoosePhotoCallback<String>() {
+
+            @Override
+            public void onChoose(String photo) {
+                Glide.with(MainActivity.this)
+                        .load(photo)
+                        .into(imageView);
+            }
+        });
+```
+
+2. Override `onActivityResult` and `onRequestPermissionsResult` in your activity, then forward their result to the `choosePhotoHelper` instance:
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    choosePhotoHelper.onActivityResult(requestCode, resultCode, data);
+}
+
+@Override
+public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    choosePhotoHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+}
+```
+
+3. Call `showChooser()` method from `choosePhotoHelper` instance:
+
+```java
+choosePhotoHelper.showChooser();
+```
 
 Here is an example showing how to use `ChoosePhotoHelper`:
 
