@@ -18,7 +18,7 @@ Use **`ChoosePhotoHelper`** simply in 3 steps:
 Create an instance of **`ChoosePhotoHelper`** using its builder pattern specifying the result type:
 
 ```java
-choosePhotoHelper = ChoosePhotoHelper.with(this)
+choosePhotoHelper = ChoosePhotoHelper.with(activity)
         .asFilePath()
         .build(new ChoosePhotoCallback<String>() {
 
