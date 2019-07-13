@@ -16,7 +16,7 @@
 
 Use **`ChoosePhotoHelper`** simply in 3 steps:
 
-## • First
+### • First
 Create an instance of **`ChoosePhotoHelper`** using its builder pattern specifying the result type:
 
 ```java
@@ -33,7 +33,7 @@ choosePhotoHelper = ChoosePhotoHelper.with(activity)
         });
 ```
 
-## • Second
+### • Second
 Override `onActivityResult` and `onRequestPermissionsResult` in your activity, then forward their result to the `choosePhotoHelper` instance:
 
 ```java
@@ -50,7 +50,7 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
 }
 ```
 
-## • Finally
+### • Finally
 Call `showChooser()` method from `choosePhotoHelper` instance:
 
 ```java
