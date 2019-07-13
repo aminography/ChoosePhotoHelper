@@ -34,7 +34,7 @@ choosePhotoHelper = ChoosePhotoHelper.with(activity)
 ```
 
 ### • Second
-Override `onActivityResult` and `onRequestPermissionsResult` in your activity, then forward their result to the `choosePhotoHelper` instance:
+Override `onActivityResult` and `onRequestPermissionsResult` in your **Activity** class, then forward their result to the `choosePhotoHelper` instance:
 
 ```java
 @Override
