@@ -50,7 +50,7 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
 ```
 
 ### • Finally
-Call `showChooser()` method from `choosePhotoHelper` instance:
+Call `showChooser()` method on `choosePhotoHelper` instance:
 
 ```java
 choosePhotoHelper.showChooser();
