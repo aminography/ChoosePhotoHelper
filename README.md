@@ -3,14 +3,6 @@
 **`ChoosePhotoHelper`** develops a component which facilitates the source code of picking photos in your Android apps. By using it, it's possible to pick photos from gallery or take an image with the camera without any boilerplate codes.
 It also internally handles some issues like rotation correction of the taken photo, permission request for camera and gallery, etc.
 
-**`ChoosePhotoHelper`** provides 3 types of result to access the chosen photo which are:
-
-| Builder Method | Result Type |
-| --- | --- |
-| `asFilePath()` | `String` |
-| `asUri()` | `Uri` |
-| `asBitmap()` | `Bitmap` |
-
 | Take a Photo | Choose from Gallery |
 | --- | --- |
 | ![](https://media.giphy.com/media/KdBwb36QCTsgKbUftB/giphy.gif) | ![](https://media.giphy.com/media/H88UXvL0jqL4HS2vuJ/giphy.gif) |
@@ -35,7 +27,15 @@ dependencies {
 
 Usage
 -----
-Use **`ChoosePhotoHelper`** simply in 3 steps:
+First of all, **`ChoosePhotoHelper`** provides 3 types of result to access the chosen photo which are:
+
+| Builder Method | Result Type |
+| --- | --- |
+| `asFilePath()` | `String` |
+| `asUri()` | `Uri` |
+| `asBitmap()` | `Bitmap` |
+
+Then, use **`ChoosePhotoHelper`** simply in 3 steps:
 
 ### • First
 Create an instance of **`ChoosePhotoHelper`** using its builder pattern specifying the result type:
