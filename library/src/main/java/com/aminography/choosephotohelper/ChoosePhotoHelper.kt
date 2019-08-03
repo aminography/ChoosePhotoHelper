@@ -31,10 +31,10 @@ import java.util.*
  */
 class ChoosePhotoHelper private constructor(
     private val activity: Activity,
+    private val outputType: OutputType,
     private val callback: ChoosePhotoCallback<*>
 ) {
 
-    private var outputType: OutputType = OutputType.FILE_PATH
     private var filePath: String? = null
     private var cameraFilePath: String? = null
 
@@ -244,21 +244,24 @@ class ChoosePhotoHelper private constructor(
         BITMAP
     }
 
-    abstract class BaseRequestBuilder<T> internal constructor(private val activity: Activity) {
+    abstract class BaseRequestBuilder<T> internal constructor(
+        private val activity: Activity,
+        private val outputType: OutputType
+    ) {
 
         fun build(callback: ChoosePhotoCallback<T>): ChoosePhotoHelper {
-            return ChoosePhotoHelper(activity, callback)
+            return ChoosePhotoHelper(activity, outputType, callback)
         }
     }
 
     class FilePathRequestBuilder internal constructor(activity: Activity) :
-        BaseRequestBuilder<String>(activity)
+        BaseRequestBuilder<String>(activity, OutputType.FILE_PATH)
 
     class UriRequestBuilder internal constructor(activity: Activity) :
-        BaseRequestBuilder<Uri>(activity)
+        BaseRequestBuilder<Uri>(activity, OutputType.URI)
 
     class BitmapRequestBuilder internal constructor(activity: Activity) :
-        BaseRequestBuilder<BitmapRequestBuilder>(activity)
+        BaseRequestBuilder<Bitmap>(activity, OutputType.BITMAP)
 
     class RequestBuilder(private val activity: Activity) {
 

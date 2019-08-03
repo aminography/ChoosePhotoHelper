@@ -17,14 +17,32 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+//        choosePhotoHelper = ChoosePhotoHelper.with(this)
+//            .asFilePath()
+//            .build(ChoosePhotoCallback {
+//                Glide.with(this)
+//                    .load(it)
+//                    .apply(RequestOptions.placeholderOf(R.drawable.default_placeholder))
+//                    .into(imageView)
+//            })
+
         choosePhotoHelper = ChoosePhotoHelper.with(this)
-            .asFilePath()
+            .asBitmap()
             .build(ChoosePhotoCallback {
                 Glide.with(this)
                     .load(it)
                     .apply(RequestOptions.placeholderOf(R.drawable.default_placeholder))
                     .into(imageView)
             })
+
+//        choosePhotoHelper = ChoosePhotoHelper.with(this)
+//            .asUri()
+//            .build(ChoosePhotoCallback {
+//                Glide.with(this)
+//                    .load(it)
+//                    .apply(RequestOptions.placeholderOf(R.drawable.default_placeholder))
+//                    .into(imageView)
+//            })
 
         button.setOnClickListener {
             choosePhotoHelper.showChooser()
