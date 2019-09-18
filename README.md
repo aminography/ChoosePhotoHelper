@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.aminography:choosephotohelper:1.0.2'
+    implementation 'com.aminography:choosephotohelper:1.0.3'
 }
 ```
 
@@ -48,7 +48,7 @@ choosePhotoHelper = ChoosePhotoHelper.with(activity)
         .build(new ChoosePhotoCallback<String>() {
             @Override
             public void onChoose(String photo) {
-                Glide.with(MainActivity.this)
+                Glide.with(imageView)
                         .load(photo)
                         .into(imageView);
             }
@@ -56,11 +56,11 @@ choosePhotoHelper = ChoosePhotoHelper.with(activity)
 ```
 
 ### • Second
-Override `onActivityResult` and `onRequestPermissionsResult` in your **Activity** class, then forward their result to the `choosePhotoHelper` instance:
+Override `onActivityResult` and `onRequestPermissionsResult` in your **Activity** / **Fragment** class, then forward their result to the `choosePhotoHelper` instance:
 
 ```java
 @Override
-protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     choosePhotoHelper.onActivityResult(requestCode, resultCode, data);
 }

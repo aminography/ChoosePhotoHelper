@@ -20,6 +20,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".UsedInActivityActivity"
+            android:label="@string/used_in_activity" />
+
+        <activity
+            android:name=".UsedInFragmentActivity"
+            android:label="@string/used_in_fragment" />
+
     </application>
 
 </manifest>

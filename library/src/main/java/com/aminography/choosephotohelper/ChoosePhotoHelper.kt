@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.widget.SimpleAdapter
 import com.aminography.choosephotohelper.callback.ChoosePhotoCallback
@@ -31,6 +32,8 @@ import java.util.*
  */
 class ChoosePhotoHelper private constructor(
     private val activity: Activity,
+    private val fragment: Fragment?,
+    private val whichSource: WhichSource,
     private val outputType: OutputType,
     private val callback: ChoosePhotoCallback<*>
 ) {
@@ -39,57 +42,59 @@ class ChoosePhotoHelper private constructor(
     private var cameraFilePath: String? = null
 
     fun showChooser() {
-        AlertDialog.Builder(activity).apply {
-            setTitle(R.string.choose_photo_using)
-            setNegativeButton(R.string.action_close, null)
+        activity.apply {
+            AlertDialog.Builder(this).apply {
+                setTitle(R.string.choose_photo_using)
+                setNegativeButton(R.string.action_close, null)
 
-            val items: List<Map<String, Any>> = if (!filePath.isNullOrBlank()) {
-                mutableListOf<Map<String, Any>>(
-                    mutableMapOf(
-                        "title" to activity.getString(R.string.camera),
-                        "icon" to R.drawable.ic_photo_camera_black_24dp
-                    ),
-                    mutableMapOf(
-                        "title" to activity.getString(R.string.gallery),
-                        "icon" to R.drawable.ic_photo_black_24dp
-                    ),
-                    mutableMapOf(
-                        "title" to activity.getString(R.string.remove_photo),
-                        "icon" to R.drawable.ic_delete_black_24dp
+                val items: List<Map<String, Any>> = if (!filePath.isNullOrBlank()) {
+                    mutableListOf<Map<String, Any>>(
+                        mutableMapOf(
+                            "title" to getString(R.string.camera),
+                            "icon" to R.drawable.ic_photo_camera_black_24dp
+                        ),
+                        mutableMapOf(
+                            "title" to getString(R.string.gallery),
+                            "icon" to R.drawable.ic_photo_black_24dp
+                        ),
+                        mutableMapOf(
+                            "title" to getString(R.string.remove_photo),
+                            "icon" to R.drawable.ic_delete_black_24dp
+                        )
                     )
-                )
-            } else {
-                mutableListOf<Map<String, Any>>(
-                    mutableMapOf(
-                        "title" to activity.getString(R.string.camera),
-                        "icon" to R.drawable.ic_photo_camera_black_24dp
-                    ),
-                    mutableMapOf(
-                        "title" to activity.getString(R.string.gallery),
-                        "icon" to R.drawable.ic_photo_black_24dp
+                } else {
+                    mutableListOf<Map<String, Any>>(
+                        mutableMapOf(
+                            "title" to getString(R.string.camera),
+                            "icon" to R.drawable.ic_photo_camera_black_24dp
+                        ),
+                        mutableMapOf(
+                            "title" to getString(R.string.gallery),
+                            "icon" to R.drawable.ic_photo_black_24dp
+                        )
                     )
+                }
+                val adapter = SimpleAdapter(
+                    activity,
+                    items,
+                    R.layout.simple_list_item,
+                    arrayOf("title", "icon"),
+                    intArrayOf(R.id.textView, R.id.imageView)
                 )
-            }
-            val adapter = SimpleAdapter(
-                activity,
-                items,
-                R.layout.simple_list_item,
-                arrayOf("title", "icon"),
-                intArrayOf(R.id.textView, R.id.imageView)
-            )
-            setAdapter(adapter) { _, which ->
-                when (which) {
-                    0 -> checkAndStartCamera()
-                    1 -> checkAndShowPicker()
-                    2 -> {
-                        filePath = null
-                        callback.onChoose(null)
+                setAdapter(adapter) { _, which ->
+                    when (which) {
+                        0 -> checkAndStartCamera()
+                        1 -> checkAndShowPicker()
+                        2 -> {
+                            filePath = null
+                            callback.onChoose(null)
+                        }
                     }
                 }
+                val dialog = create()
+                dialog.listView.setPadding(0, dip(16), 0, 0)
+                dialog.show()
             }
-            val dialog = create()
-            dialog.listView.setPadding(0, activity.dip(16), 0, 0)
-            dialog.show()
         }
     }
 
@@ -106,25 +111,22 @@ class ChoosePhotoHelper private constructor(
                     )
                 }
             }
-            filePath?.apply {
+            filePath?.let {
                 @Suppress("UNCHECKED_CAST")
                 when (outputType) {
                     OutputType.FILE_PATH -> {
-                        (callback as ChoosePhotoCallback<String>).onChoose(filePath)
+                        (callback as ChoosePhotoCallback<String>).onChoose(it)
                     }
                     OutputType.URI -> {
-                        val uri = Uri.fromFile(File(filePath))
+                        val uri = Uri.fromFile(File(it))
                         (callback as ChoosePhotoCallback<Uri>).onChoose(uri)
                     }
                     OutputType.BITMAP -> {
                         doAsync {
                             //                            val bitmapBytes = modifyOrientationAndResize(this@apply)
-                            var bitmap = BitmapFactory.decodeFile(this@apply)
+                            var bitmap = BitmapFactory.decodeFile(it)
                             try {
-                                bitmap = modifyOrientation(
-                                    bitmap,
-                                    this@apply
-                                )
+                                bitmap = modifyOrientation(bitmap, it)
                             } catch (e: IOException) {
                                 e.printStackTrace()
                             }
@@ -180,61 +182,78 @@ class ChoosePhotoHelper private constructor(
                     uriFromFile(
                         activity,
                         activity.application.packageName,
-                        File(cameraFilePath)
+                        File(cameraFilePath!!)
                     )
                 )
                 takePicture.putExtra(MediaStore.EXTRA_SIZE_LIMIT, CAMERA_MAX_FILE_SIZE_BYTE)
-                activity.startActivityForResult(
-                    takePicture,
-                    REQUEST_CODE_TAKE_PHOTO
-                )
+                when (whichSource) {
+                    WhichSource.ACTIVITY -> activity.startActivityForResult(
+                        takePicture,
+                        REQUEST_CODE_TAKE_PHOTO
+                    )
+                    WhichSource.FRAGMENT -> fragment?.startActivityForResult(
+                        takePicture,
+                        REQUEST_CODE_TAKE_PHOTO
+                    )
+                }
             }
             REQUEST_CODE_PICK_PHOTO_PERMISSION -> {
                 val intent = Intent()
                 intent.type = "image/*"
                 intent.action = Intent.ACTION_GET_CONTENT
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
-                activity.startActivityForResult(
-                    Intent.createChooser(intent, "Choose Photo"),
-                    REQUEST_CODE_PICK_PHOTO
-                )
+                when (whichSource) {
+                    WhichSource.ACTIVITY -> activity.startActivityForResult(
+                        Intent.createChooser(intent, "Choose Photo"),
+                        REQUEST_CODE_PICK_PHOTO
+                    )
+                    WhichSource.FRAGMENT -> fragment?.startActivityForResult(
+                        Intent.createChooser(intent, "Choose Photo"),
+                        REQUEST_CODE_PICK_PHOTO
+                    )
+                }
             }
         }
     }
 
     private fun checkAndStartCamera() {
-        if (hasPermissions(
-                activity,
-                *TAKE_PHOTO_PERMISSIONS
-            )
-        ) {
+        if (hasPermissions(activity, *TAKE_PHOTO_PERMISSIONS)) {
             onPermissionsGranted(
                 REQUEST_CODE_TAKE_PHOTO_PERMISSION
             )
         } else {
-            ActivityCompat.requestPermissions(
-                activity,
-                TAKE_PHOTO_PERMISSIONS,
-                REQUEST_CODE_TAKE_PHOTO_PERMISSION
-            )
+            when (whichSource) {
+                WhichSource.ACTIVITY -> ActivityCompat.requestPermissions(
+                    activity,
+                    TAKE_PHOTO_PERMISSIONS,
+                    REQUEST_CODE_TAKE_PHOTO_PERMISSION
+                )
+                WhichSource.FRAGMENT -> fragment?.requestPermissions(
+                    TAKE_PHOTO_PERMISSIONS,
+                    REQUEST_CODE_TAKE_PHOTO_PERMISSION
+                )
+            }
+
         }
     }
 
     private fun checkAndShowPicker() {
-        if (hasPermissions(
-                activity,
-                *PICK_PHOTO_PERMISSIONS
-            )
-        ) {
+        if (hasPermissions(activity, *PICK_PHOTO_PERMISSIONS)) {
             onPermissionsGranted(
                 REQUEST_CODE_PICK_PHOTO_PERMISSION
             )
         } else {
-            ActivityCompat.requestPermissions(
-                activity,
-                PICK_PHOTO_PERMISSIONS,
-                REQUEST_CODE_PICK_PHOTO_PERMISSION
-            )
+            when (whichSource) {
+                WhichSource.ACTIVITY -> ActivityCompat.requestPermissions(
+                    activity,
+                    PICK_PHOTO_PERMISSIONS,
+                    REQUEST_CODE_PICK_PHOTO_PERMISSION
+                )
+                WhichSource.FRAGMENT -> fragment?.requestPermissions(
+                    PICK_PHOTO_PERMISSIONS,
+                    REQUEST_CODE_PICK_PHOTO_PERMISSION
+                )
+            }
         }
     }
 
@@ -245,53 +264,99 @@ class ChoosePhotoHelper private constructor(
     }
 
     abstract class BaseRequestBuilder<T> internal constructor(
-        private val activity: Activity,
+        private val activity: Activity?,
+        private val fragment: Fragment?,
+        private val which: WhichSource,
         private val outputType: OutputType
     ) {
 
         fun build(callback: ChoosePhotoCallback<T>): ChoosePhotoHelper {
-            return ChoosePhotoHelper(activity, outputType, callback)
+            return when (which) {
+                WhichSource.ACTIVITY -> ChoosePhotoHelper(
+                    activity!!,
+                    null,
+                    which,
+                    outputType,
+                    callback
+                )
+                WhichSource.FRAGMENT -> ChoosePhotoHelper(
+                    fragment?.requireActivity()!!,
+                    fragment,
+                    which,
+                    outputType,
+                    callback
+                )
+            }
         }
     }
 
-    class FilePathRequestBuilder internal constructor(activity: Activity) :
-        BaseRequestBuilder<String>(activity, OutputType.FILE_PATH)
+    class FilePathRequestBuilder internal constructor(
+        activity: Activity?,
+        fragment: Fragment?,
+        which: WhichSource
+    ) : BaseRequestBuilder<String>(activity, fragment, which, OutputType.FILE_PATH)
 
-    class UriRequestBuilder internal constructor(activity: Activity) :
-        BaseRequestBuilder<Uri>(activity, OutputType.URI)
+    class UriRequestBuilder internal constructor(
+        activity: Activity?,
+        fragment: Fragment?,
+        which: WhichSource
+    ) : BaseRequestBuilder<Uri>(activity, fragment, which, OutputType.URI)
 
-    class BitmapRequestBuilder internal constructor(activity: Activity) :
-        BaseRequestBuilder<Bitmap>(activity, OutputType.BITMAP)
+    class BitmapRequestBuilder internal constructor(
+        activity: Activity?,
+        fragment: Fragment?,
+        which: WhichSource
+    ) : BaseRequestBuilder<Bitmap>(activity, fragment, which, OutputType.BITMAP)
 
-    class RequestBuilder(private val activity: Activity) {
+    class RequestBuilder(
+        private val activity: Activity? = null,
+        private val fragment: Fragment? = null,
+        private val which: WhichSource
+    ) {
 
         fun asFilePath(): FilePathRequestBuilder {
-            return FilePathRequestBuilder(activity)
+            return FilePathRequestBuilder(activity, fragment, which)
         }
 
         fun asUri(): UriRequestBuilder {
-            return UriRequestBuilder(activity)
+            return UriRequestBuilder(activity, fragment, which)
         }
 
         fun asBitmap(): BitmapRequestBuilder {
-            return BitmapRequestBuilder(activity)
+            return BitmapRequestBuilder(activity, fragment, which)
         }
     }
 
+    enum class WhichSource {
+        ACTIVITY,
+        FRAGMENT,
+    }
+
     companion object {
+
         private const val CAMERA_MAX_FILE_SIZE_BYTE = 2 * 1024 * 1024
         private const val REQUEST_CODE_TAKE_PHOTO = 101
         private const val REQUEST_CODE_PICK_PHOTO = 102
 
-        val TAKE_PHOTO_PERMISSIONS =
-            arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         const val REQUEST_CODE_TAKE_PHOTO_PERMISSION = 103
+        val TAKE_PHOTO_PERMISSIONS = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
 
-        val PICK_PHOTO_PERMISSIONS = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         const val REQUEST_CODE_PICK_PHOTO_PERMISSION = 104
+        val PICK_PHOTO_PERMISSIONS = arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
 
         @JvmStatic
-        fun with(activity: Activity): RequestBuilder = RequestBuilder(activity)
+        fun with(activity: Activity): RequestBuilder =
+            RequestBuilder(activity = activity, which = WhichSource.ACTIVITY)
+
+        @JvmStatic
+        fun with(fragment: Fragment): RequestBuilder =
+            RequestBuilder(fragment = fragment, which = WhichSource.FRAGMENT)
+
     }
 
 }
