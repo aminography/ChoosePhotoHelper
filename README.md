@@ -2,8 +2,9 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ChoosePhotoHelper-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7777)
 [![Download](https://api.bintray.com/packages/aminography/maven/ChoosePhotoHelper/images/download.svg) ](https://bintray.com/aminography/maven/ChoosePhotoHelper/_latestVersion)
 
-**`ChoosePhotoHelper`** develops a component which facilitates the source code of picking photos in your Android apps. By using it, it's possible to pick photos from gallery or take an image with the camera without any boilerplate codes.
-It also internally handles some issues like **rotation correction of the taken photos**, **permission request** for camera and gallery (if needed), etc.
+Picking an image as an avatar in Android apps needs to write a bunch of error-prone boilerplate codes.
+**`ChoosePhotoHelper`** develops a component which facilitates picking photos from gallery or taking an image with the camera without any boilerplate codes.
+It also internally handles some issues like **rotation correction of the taken photos**, **permission request** for camera and gallery (if needed), **URI exposure** problem, etc.
 
 | Take a Photo | Choose from Gallery |
 | --- | --- |
