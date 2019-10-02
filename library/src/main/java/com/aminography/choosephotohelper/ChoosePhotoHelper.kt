@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import android.support.annotation.StyleRes
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
@@ -41,9 +42,10 @@ class ChoosePhotoHelper private constructor(
     private var filePath: String? = null
     private var cameraFilePath: String? = null
 
-    fun showChooser() {
+    @JvmOverloads
+    fun showChooser(@StyleRes dialogTheme: Int = 0) {
         activity.apply {
-            AlertDialog.Builder(this).apply {
+            AlertDialog.Builder(this, dialogTheme).apply {
                 setTitle(R.string.choose_photo_using)
                 setNegativeButton(R.string.action_close, null)
 
