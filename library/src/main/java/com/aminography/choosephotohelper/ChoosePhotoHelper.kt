@@ -42,6 +42,11 @@ class ChoosePhotoHelper private constructor(
     private var filePath: String? = null
     private var cameraFilePath: String? = null
 
+    /**
+     * Opens a chooser dialog to select the way of picking photo.
+     *
+     * @param dialogTheme the theme of chooser dialog
+     */
     @JvmOverloads
     fun showChooser(@StyleRes dialogTheme: Int = 0) {
         activity.apply {
@@ -98,6 +103,20 @@ class ChoosePhotoHelper private constructor(
                 dialog.show()
             }
         }
+    }
+
+    /**
+     * Opens camera to take a photo without showing the chooser dialog.
+     */
+    fun takePhoto() {
+        checkAndStartCamera()
+    }
+
+    /**
+     * Opens default device's image picker without showing the chooser dialog.
+     */
+    fun chooseFromGallery() {
+        checkAndStartCamera()
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
