@@ -116,7 +116,7 @@ class ChoosePhotoHelper private constructor(
      * Opens default device's image picker without showing the chooser dialog.
      */
     fun chooseFromGallery() {
-        checkAndStartCamera()
+        checkAndShowPicker()
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
