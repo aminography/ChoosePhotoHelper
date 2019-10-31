@@ -190,14 +190,12 @@ class ChoosePhotoHelper private constructor(
                 val picturesPath =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                 val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                cameraFilePath =
-                    picturesPath.toString() +
-                            File.separator +
-                            SimpleDateFormat(
-                                "yyyy-MMM-dd_HH-mm-ss",
-                                Locale.getDefault()
-                            ).format(Date()) +
-                            ".jpg"
+
+                cameraFilePath = "$picturesPath${File.separator}${SimpleDateFormat(
+                    "yyyy-MMM-dd_HH-mm-ss",
+                    Locale.getDefault()
+                ).format(Date())}.jpg"
+
                 takePicture.putExtra(
                     MediaStore.EXTRA_OUTPUT,
                     uriFromFile(
