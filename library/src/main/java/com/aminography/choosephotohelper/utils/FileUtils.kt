@@ -15,6 +15,15 @@ import java.io.File
  * Created by aminography on 5/17/2019.
  */
 
+/**
+ * Finds uri for the file using [FileProvider] to avoid [android.os.FileUriExposedException] for APIs >= 24.
+ *
+ * @param context a context
+ * @param applicationId package name of the current application
+ * @param file the file to find its uri
+ *
+ * @return uri of the input file.
+ */
 fun uriFromFile(context: Context, applicationId: String, file: File): Uri {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         FileProvider.getUriForFile(context, "$applicationId.provider", file)
@@ -23,6 +32,14 @@ fun uriFromFile(context: Context, applicationId: String, file: File): Uri {
     }
 }
 
+/**
+ * Finds real path of the file which is addressed by the uri.
+ *
+ * @param context a context
+ * @param uri uri to find real path
+ *
+ * @return real path of the file addressing by the uri.
+ */
 fun pathFromUri(context: Context, uri: Uri): String? {
     // DocumentProvider
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(
@@ -41,10 +58,9 @@ fun pathFromUri(context: Context, uri: Uri): String? {
             }
             // TODO handle non-primary volumes
         } else if (isDownloadsDocument(uri)) {
-            val id = DocumentsContract.getDocumentId(uri)
             val contentUri = ContentUris.withAppendedId(
                 Uri.parse("content://downloads/public_downloads"),
-                java.lang.Long.valueOf(id)
+                DocumentsContract.getDocumentId(uri).toLong()
             )
             return getDataColumn(
                 context,
@@ -73,7 +89,7 @@ fun pathFromUri(context: Context, uri: Uri): String? {
             )
         }// MediaProvider
         // DownloadsProvider
-    } else if ("content".equals(uri.scheme!!, ignoreCase = true)) {
+    } else if ("content".equals(uri.scheme, ignoreCase = true)) {
         // Return the remote address
         return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(
             context,
@@ -81,7 +97,7 @@ fun pathFromUri(context: Context, uri: Uri): String? {
             null,
             null
         )
-    } else if ("file".equals(uri.scheme!!, ignoreCase = true)) {
+    } else if ("file".equals(uri.scheme, ignoreCase = true)) {
         return uri.path
     }// File
     // MediaStore (and general)
