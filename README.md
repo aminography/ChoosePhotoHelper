@@ -1,6 +1,7 @@
 # `ChoosePhotoHelper` :zap:
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ChoosePhotoHelper-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7777)
 [![Download](https://api.bintray.com/packages/aminography/maven/ChoosePhotoHelper/images/download.svg) ](https://bintray.com/aminography/maven/ChoosePhotoHelper/_latestVersion)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6f9a19772c24493b0fc365a86f88b18)](https://www.codacy.com/manual/aminography/ChoosePhotoHelper?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=aminography/ChoosePhotoHelper&amp;utm_campaign=Badge_Grade)
 
 Picking an image as an avatar in Android apps needs to write a bunch of error-prone boilerplate codes. **`ChoosePhotoHelper`** develops a component which facilitates picking photos from gallery or taking an image with the camera without any boilerplate codes.
 It also internally handles some issues like **rotation correction of the taken photos**, **permission request** for camera and gallery (if needed), **URI exposure** problem, etc.
