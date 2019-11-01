@@ -15,14 +15,11 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.widget.SimpleAdapter
 import com.aminography.choosephotohelper.callback.ChoosePhotoCallback
-import com.aminography.choosephotohelper.utils.hasPermissions
-import com.aminography.choosephotohelper.utils.modifyOrientation
-import com.aminography.choosephotohelper.utils.pathFromUri
-import com.aminography.choosephotohelper.utils.uriFromFile
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.uiThread
+import com.aminography.choosephotohelper.utils.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -99,7 +96,7 @@ class ChoosePhotoHelper private constructor(
                     }
                 }
                 val dialog = create()
-                dialog.listView.setPadding(0, dip(16), 0, 0)
+                dialog.listView.setPadding(0, dp2px(16f).toInt(), 0, 0)
                 dialog.show()
             }
         }
@@ -143,7 +140,7 @@ class ChoosePhotoHelper private constructor(
                         (callback as ChoosePhotoCallback<Uri>).onChoose(uri)
                     }
                     OutputType.BITMAP -> {
-                        doAsync {
+                        CoroutineScope(Dispatchers.IO).launch {
                             //                            val bitmapBytes = modifyOrientationAndResize(this@apply)
                             var bitmap = BitmapFactory.decodeFile(it)
                             try {
@@ -151,7 +148,7 @@ class ChoosePhotoHelper private constructor(
                             } catch (e: IOException) {
                                 e.printStackTrace()
                             }
-                            uiThread {
+                            withContext(Dispatchers.Main) {
                                 (callback as ChoosePhotoCallback<Bitmap>).onChoose(bitmap)
                             }
                         }

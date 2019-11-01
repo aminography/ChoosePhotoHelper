@@ -3,7 +3,7 @@ package com.aminography.choosephotohelper.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.media.ExifInterface
+import android.support.media.ExifInterface
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
@@ -11,23 +11,44 @@ import java.io.IOException
  * Created by aminography on 5/17/2019.
  */
 
+/**
+ * @param bitmap
+ * @param degrees
+ *
+ * @return
+ */
 fun rotate(bitmap: Bitmap, degrees: Float): Bitmap {
     val matrix = Matrix()
     matrix.postRotate(degrees)
     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 }
 
+/**
+ * @param bitmap
+ * @param horizontal
+ * @param vertical
+ *
+ * @return
+ */
 fun flip(bitmap: Bitmap, horizontal: Boolean, vertical: Boolean): Bitmap {
     val matrix = Matrix()
     matrix.preScale((if (horizontal) -1 else 1).toFloat(), (if (vertical) -1 else 1).toFloat())
     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 }
 
+/**
+ * @param bitmap
+ * @param absolutePath
+ *
+ * @return
+ */
 @Throws(IOException::class)
 fun modifyOrientation(bitmap: Bitmap, absolutePath: String): Bitmap {
-    val ei = ExifInterface(absolutePath)
-    val orientation =
-        ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+    val exif = ExifInterface(absolutePath)
+    val orientation = exif.getAttributeInt(
+        ExifInterface.TAG_ORIENTATION,
+        ExifInterface.ORIENTATION_NORMAL
+    )
 
     return when (orientation) {
         ExifInterface.ORIENTATION_ROTATE_90 -> rotate(
@@ -56,6 +77,11 @@ fun modifyOrientation(bitmap: Bitmap, absolutePath: String): Bitmap {
     }
 }
 
+/**
+ * @param absolutePath
+ *
+ * @return
+ */
 @Throws(IOException::class)
 fun modifyOrientationAndResize(absolutePath: String): ByteArray? {
     var bitmap = BitmapFactory.decodeFile(absolutePath)
