@@ -57,27 +57,27 @@ class ChoosePhotoHelper private constructor(
                 val items: List<Map<String, Any>> = if (!filePath.isNullOrBlank()) {
                     mutableListOf<Map<String, Any>>(
                         mutableMapOf(
-                            "title" to getString(R.string.camera),
-                            "icon" to R.drawable.ic_photo_camera_black_24dp
+                            KEY_TITLE to getString(R.string.camera),
+                            KEY_ICON to R.drawable.ic_photo_camera_black_24dp
                         ),
                         mutableMapOf(
-                            "title" to getString(R.string.gallery),
-                            "icon" to R.drawable.ic_photo_black_24dp
+                            KEY_TITLE to getString(R.string.gallery),
+                            KEY_ICON to R.drawable.ic_photo_black_24dp
                         ),
                         mutableMapOf(
-                            "title" to getString(R.string.remove_photo),
-                            "icon" to R.drawable.ic_delete_black_24dp
+                            KEY_TITLE to getString(R.string.remove_photo),
+                            KEY_ICON to R.drawable.ic_delete_black_24dp
                         )
                     )
                 } else {
                     mutableListOf<Map<String, Any>>(
                         mutableMapOf(
-                            "title" to getString(R.string.camera),
-                            "icon" to R.drawable.ic_photo_camera_black_24dp
+                            KEY_TITLE to getString(R.string.camera),
+                            KEY_ICON to R.drawable.ic_photo_camera_black_24dp
                         ),
                         mutableMapOf(
-                            "title" to getString(R.string.gallery),
-                            "icon" to R.drawable.ic_photo_black_24dp
+                            KEY_TITLE to getString(R.string.gallery),
+                            KEY_ICON to R.drawable.ic_photo_black_24dp
                         )
                     )
                 }
@@ -85,7 +85,7 @@ class ChoosePhotoHelper private constructor(
                     activity,
                     items,
                     R.layout.simple_list_item,
-                    arrayOf("title", "icon"),
+                    arrayOf(KEY_TITLE, KEY_ICON),
                     intArrayOf(R.id.textView, R.id.imageView)
                 )
                 setAdapter(adapter) { _, which ->
@@ -352,6 +352,9 @@ class ChoosePhotoHelper private constructor(
     }
 
     companion object {
+
+        private const val KEY_TITLE = "title"
+        private const val KEY_ICON = "icon"
 
         private const val CAMERA_MAX_FILE_SIZE_BYTE = 2 * 1024 * 1024
         private const val REQUEST_CODE_TAKE_PHOTO = 101
