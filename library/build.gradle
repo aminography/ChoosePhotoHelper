@@ -9,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 4
-        versionName "1.0.5"
+        versionCode 6
+        versionName "1.0.6"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -62,7 +62,7 @@ ext {
 
     publishedGroupId = 'com.aminography'
     artifact = 'choosephotohelper'
-    libraryVersion = "1.0.5"
+    libraryVersion = "1.0.6"
 
     libraryName = 'ChoosePhotoHelper'
     libraryDescription = 'ChoosePhotoHelper develops a component which facilitates the source code of picking photos in your Android apps.'

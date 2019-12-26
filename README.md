@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.aminography:choosephotohelper:1.0.5'
+    implementation 'com.aminography:choosephotohelper:1.0.6'
 }
 ```
 

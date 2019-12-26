@@ -42,10 +42,8 @@ fun uriFromFile(context: Context, applicationId: String, file: File): Uri {
  */
 fun pathFromUri(context: Context, uri: Uri): String? {
     // DocumentProvider
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(
-            context,
-            uri
-        )
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT &&
+        DocumentsContract.isDocumentUri(context, uri)
     ) {
         // ExternalStorageProvider
         if (isExternalStorageDocument(uri)) {
@@ -58,9 +56,21 @@ fun pathFromUri(context: Context, uri: Uri): String? {
             }
             // TODO handle non-primary volumes
         } else if (isDownloadsDocument(uri)) {
+            getFileName(context, uri)?.let { fileName ->
+                return Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName
+            }
+
+            var documentId = DocumentsContract.getDocumentId(uri)
+            if (documentId.startsWith("raw:")) {
+                documentId = documentId.replace("raw:", "")
+                if (File(documentId).exists()) {
+                    return documentId
+                }
+            }
+
             val contentUri = ContentUris.withAppendedId(
                 Uri.parse("content://downloads/public_downloads"),
-                DocumentsContract.getDocumentId(uri).toLong()
+                documentId.toLong()
             )
             return getDataColumn(
                 context,
@@ -138,6 +148,25 @@ private fun getDataColumn(
         cursor = context.contentResolver.query(uri!!, projection, selection, selectionArgs, null)
         if (cursor != null && cursor.moveToFirst()) {
             val index = cursor.getColumnIndexOrThrow(column)
+            return cursor.getString(index)
+        }
+    } finally {
+        cursor?.close()
+    }
+    return null
+}
+
+private fun getFileName(
+    context: Context,
+    uri: Uri
+): String? {
+    var cursor: Cursor? = null
+    val projection = arrayOf(MediaStore.MediaColumns.DISPLAY_NAME)
+
+    try {
+        cursor = context.contentResolver.query(uri, projection, null, null, null)
+        if (cursor != null && cursor.moveToFirst()) {
+            val index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
             return cursor.getString(index)
         }
     } finally {
