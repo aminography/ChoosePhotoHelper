@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.support.annotation.StyleRes
@@ -33,11 +34,10 @@ class ChoosePhotoHelper private constructor(
     private val fragment: Fragment?,
     private val whichSource: WhichSource,
     private val outputType: OutputType,
-    private val callback: ChoosePhotoCallback<*>
-) {
-
-    private var filePath: String? = null
+    private val callback: ChoosePhotoCallback<*>,
+    private var filePath: String? = null,
     private var cameraFilePath: String? = null
+) {
 
     /**
      * Opens a chooser dialog to select the way of picking photo.
@@ -156,6 +156,15 @@ class ChoosePhotoHelper private constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Call this method in Activity#onSaveInstanceState or Fragment#onSaveInstanceState
+     * to save ChoosePhotoHelper state that can be later restored by withState(Bundle)
+     */
+    fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(FILE_PATH, filePath)
+        outState.putString(CAMERA_FILE_PATH, cameraFilePath)
     }
 
     fun onRequestPermissionsResult(
@@ -286,6 +295,19 @@ class ChoosePhotoHelper private constructor(
         private val outputType: OutputType
     ) {
 
+        private var filePath: String? = null
+        private var cameraFilePath: String? = null
+
+
+        /**
+         * Use this method to restore the state previously saved on onSaveInstanceState
+         */
+        fun withState(state: Bundle?): BaseRequestBuilder<T> {
+            filePath = state?.getString(FILE_PATH)
+            cameraFilePath = state?.getString(CAMERA_FILE_PATH)
+            return this
+        }
+
         fun build(callback: ChoosePhotoCallback<T>): ChoosePhotoHelper {
             return when (which) {
                 WhichSource.ACTIVITY -> ChoosePhotoHelper(
@@ -293,14 +315,18 @@ class ChoosePhotoHelper private constructor(
                     null,
                     which,
                     outputType,
-                    callback
+                    callback,
+                    filePath,
+                    cameraFilePath
                 )
                 WhichSource.FRAGMENT -> ChoosePhotoHelper(
                     fragment?.requireActivity()!!,
                     fragment,
                     which,
                     outputType,
-                    callback
+                    callback,
+                    filePath,
+                    cameraFilePath
                 )
             }
         }
@@ -367,6 +393,9 @@ class ChoosePhotoHelper private constructor(
         val PICK_PHOTO_PERMISSIONS = arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
+
+        private const val FILE_PATH = "filePath"
+        private const val CAMERA_FILE_PATH = "cameraFilePath"
 
         @JvmStatic
         fun with(activity: Activity): RequestBuilder =
