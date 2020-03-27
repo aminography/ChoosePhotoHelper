@@ -95,6 +95,7 @@ class MainActivity : AppCompatActivity() {
 
         choosePhotoHelper = ChoosePhotoHelper.with(this)
             .asFilePath()
+            .withState(savedInstanceState)
             .build(ChoosePhotoCallback {
                 Glide.with(this)
                     .load(it)
@@ -116,6 +117,10 @@ class MainActivity : AppCompatActivity() {
         choosePhotoHelper.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        choosePhotoHelper.onSaveInstanceState(outState)
+        super.onSaveInstanceState(outState)
+    }
 }
 ```
 
