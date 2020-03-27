@@ -3,13 +3,16 @@ package com.aminography.choosephotohelper.sample
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.aminography.choosephotohelper.ChoosePhotoHelper
 import com.aminography.choosephotohelper.callback.ChoosePhotoCallback
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.activity_used_in_activity.*
 
+/**
+ * @author aminography
+ */
 class UsedInActivityActivity : AppCompatActivity() {
 
     private lateinit var choosePhotoHelper: ChoosePhotoHelper

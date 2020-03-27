@@ -3,12 +3,12 @@ package com.aminography.choosephotohelper.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.support.media.ExifInterface
+import androidx.exifinterface.media.ExifInterface
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 /**
- * Created by aminography on 5/17/2019.
+ * @author aminography
  */
 
 /**

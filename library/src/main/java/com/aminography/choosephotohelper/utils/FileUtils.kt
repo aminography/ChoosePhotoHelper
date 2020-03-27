@@ -8,11 +8,11 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.support.v4.content.FileProvider
+import androidx.core.content.FileProvider
 import java.io.File
 
 /**
- * Created by aminography on 5/17/2019.
+ * @author aminography
  */
 
 /**

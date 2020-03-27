@@ -3,11 +3,11 @@ package com.aminography.choosephotohelper.utils
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.support.annotation.Size
-import android.support.v4.content.ContextCompat
+import androidx.annotation.Size
+import androidx.core.content.ContextCompat
 
 /**
- * Created by aminography on 5/17/2019.
+ * @author aminography
  */
 
 fun hasPermissions(

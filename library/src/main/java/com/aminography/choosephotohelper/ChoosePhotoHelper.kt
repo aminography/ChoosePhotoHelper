@@ -10,11 +10,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.support.annotation.StyleRes
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
 import android.widget.SimpleAdapter
+import androidx.annotation.StyleRes
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import com.aminography.choosephotohelper.callback.ChoosePhotoCallback
 import com.aminography.choosephotohelper.utils.*
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Created by aminography on 5/17/2019.
+ * @author aminography
  */
 class ChoosePhotoHelper private constructor(
     private val activity: Activity,

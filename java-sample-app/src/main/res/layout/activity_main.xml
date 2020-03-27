@@ -14,7 +14,7 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/usedInActivityButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
             android:textColor="@color/white"
             app:backgroundTint="@color/colorAccent" />
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/usedInFragmentButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

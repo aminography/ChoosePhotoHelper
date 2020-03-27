@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.aminography:choosephotohelper:1.0.6'
+    implementation 'com.aminography:choosephotohelper:1.1.0'
 }
 ```
 
@@ -123,6 +123,14 @@ class MainActivity : AppCompatActivity() {
     }
 }
 ```
+
+<br/>
+
+Change Log
+----------
+### Version 1.1.0
+- Migrating to AndroidX.
+- Adding `onSaveInstanceState` to save and restore state.
 
 <br/>
 
