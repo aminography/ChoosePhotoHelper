@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.aminography:choosephotohelper:1.1.0'
+    implementation 'com.aminography:choosephotohelper:1.2.0'
 }
 ```
 
@@ -128,6 +128,9 @@ class MainActivity : AppCompatActivity() {
 
 Change Log
 ----------
+### Version 1.2.0
+- File path problem targeting api 29 is fixed.
+
 ### Version 1.1.0
 - Migrating to AndroidX.
 - Adding `onSaveInstanceState` to save and restore state.

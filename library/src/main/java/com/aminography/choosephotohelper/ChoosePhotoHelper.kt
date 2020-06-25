@@ -141,10 +141,10 @@ class ChoosePhotoHelper private constructor(
                     }
                     OutputType.BITMAP -> {
                         CoroutineScope(Dispatchers.IO).launch {
-                            //                            val bitmapBytes = modifyOrientationAndResize(this@apply)
+//                            val bitmapBytes = modifyOrientationAndResize(this@apply)
                             var bitmap = BitmapFactory.decodeFile(it)
                             try {
-                                bitmap = modifyOrientation(bitmap, it)
+                                bitmap = modifyOrientationSuspending(bitmap, it)
                             } catch (e: IOException) {
                                 e.printStackTrace()
                             }
@@ -193,16 +193,16 @@ class ChoosePhotoHelper private constructor(
     private fun onPermissionsGranted(requestCode: Int) {
         when (requestCode) {
             REQUEST_CODE_TAKE_PHOTO_PERMISSION -> {
-                val picturesPath =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                val storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
-                cameraFilePath = "$picturesPath${File.separator}${SimpleDateFormat(
-                    "yyyy-MMM-dd_HH-mm-ss",
-                    Locale.getDefault()
-                ).format(Date())}.jpg"
+                cameraFilePath = File.createTempFile(
+                    SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss", Locale.getDefault()).format(Date()),
+                    ".jpg",
+                    storageDir
+                ).absolutePath
 
-                takePicture.putExtra(
+                intent.putExtra(
                     MediaStore.EXTRA_OUTPUT,
                     uriFromFile(
                         activity,
@@ -210,14 +210,14 @@ class ChoosePhotoHelper private constructor(
                         File(cameraFilePath!!)
                     )
                 )
-                takePicture.putExtra(MediaStore.EXTRA_SIZE_LIMIT, CAMERA_MAX_FILE_SIZE_BYTE)
+                intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, CAMERA_MAX_FILE_SIZE_BYTE)
                 when (whichSource) {
                     WhichSource.ACTIVITY -> activity.startActivityForResult(
-                        takePicture,
+                        intent,
                         REQUEST_CODE_TAKE_PHOTO
                     )
                     WhichSource.FRAGMENT -> fragment?.startActivityForResult(
-                        takePicture,
+                        intent,
                         REQUEST_CODE_TAKE_PHOTO
                     )
                 }

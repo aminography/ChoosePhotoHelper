@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
@@ -40,7 +42,18 @@ fun flip(bitmap: Bitmap, horizontal: Boolean, vertical: Boolean): Bitmap {
  * @param bitmap
  * @param absolutePath
  *
- * @return
+ * @return modified bitmap
+ */
+suspend fun modifyOrientationSuspending(bitmap: Bitmap, absolutePath: String): Bitmap =
+    withContext(Dispatchers.IO) {
+        modifyOrientation(bitmap, absolutePath)
+    }
+
+/**
+ * @param bitmap
+ * @param absolutePath
+ *
+ * @return modified bitmap
  */
 @Throws(IOException::class)
 fun modifyOrientation(bitmap: Bitmap, absolutePath: String): Bitmap {
