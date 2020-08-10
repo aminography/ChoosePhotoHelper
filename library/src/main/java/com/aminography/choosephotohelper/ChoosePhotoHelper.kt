@@ -43,15 +43,16 @@ class ChoosePhotoHelper private constructor(
      * Opens a chooser dialog to select the way of picking photo.
      *
      * @param dialogTheme the theme of chooser dialog
+     * @param showDeleteButton to show delete button even if no image is chosen
      */
     @JvmOverloads
-    fun showChooser(@StyleRes dialogTheme: Int = 0) {
+    fun showChooser(@StyleRes dialogTheme: Int = 0, showDeleteButton: Int = 0) {
         activity.apply {
             AlertDialog.Builder(this, dialogTheme).apply {
                 setTitle(R.string.choose_photo_using)
                 setNegativeButton(R.string.action_close, null)
-
-                val items: List<Map<String, Any>> = if (!filePath.isNullOrBlank()) {
+                if(showDeleteButton==0){
+                    val items: List<Map<String, Any>> = if (!filePath.isNullOrBlank()) {
                     mutableListOf<Map<String, Any>>(
                         mutableMapOf(
                             KEY_TITLE to getString(R.string.camera),
@@ -67,7 +68,19 @@ class ChoosePhotoHelper private constructor(
                         )
                     )
                 } else {
-                    mutableListOf<Map<String, Any>>(
+                        mutableListOf<Map<String, Any>>(
+                            mutableMapOf(
+                                KEY_TITLE to getString(R.string.camera),
+                                KEY_ICON to R.drawable.ic_photo_camera_black_24dp
+                            ),
+                            mutableMapOf(
+                                KEY_TITLE to getString(R.string.gallery),
+                                KEY_ICON to R.drawable.ic_photo_black_24dp
+                            )
+                        )
+                    }
+                }else{
+                     val items: List<Map<String, Any>> = mutableListOf<Map<String, Any>>(
                         mutableMapOf(
                             KEY_TITLE to getString(R.string.camera),
                             KEY_ICON to R.drawable.ic_photo_camera_black_24dp
@@ -75,9 +88,14 @@ class ChoosePhotoHelper private constructor(
                         mutableMapOf(
                             KEY_TITLE to getString(R.string.gallery),
                             KEY_ICON to R.drawable.ic_photo_black_24dp
+                        ),
+                        mutableMapOf(
+                            KEY_TITLE to getString(R.string.remove_photo),
+                            KEY_ICON to R.drawable.ic_delete_black_24dp
                         )
-                    )
+                    )  
                 }
+                
                 val adapter = SimpleAdapter(
                     activity,
                     items,
