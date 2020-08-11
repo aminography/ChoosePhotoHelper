@@ -128,6 +128,10 @@ class MainActivity : AppCompatActivity() {
 
 Change Log
 ----------
+### Version 1.2.1
+- Some minor improvements.
+- Adding ability to always show remove photo option.
+
 ### Version 1.2.0
 - File path problem targeting api 29 is fixed.
 
