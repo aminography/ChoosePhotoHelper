@@ -19,16 +19,18 @@ import java.io.File
  * Finds uri for the file using [FileProvider] to avoid [android.os.FileUriExposedException] for APIs >= 24.
  *
  * @param context a context
- * @param applicationId package name of the current application
- * @param file the file to find its uri
  *
  * @return uri of the input file.
  */
-fun uriFromFile(context: Context, applicationId: String, file: File): Uri {
+fun File.grantedUri(context: Context): Uri {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        FileProvider.getUriForFile(context, "$applicationId.provider", file)
+        FileProvider.getUriForFile(
+            context,
+            "${context.applicationContext.packageName}.provider",
+            this
+        )
     } else {
-        Uri.fromFile(file)
+        Uri.fromFile(this)
     }
 }
 
@@ -57,7 +59,8 @@ fun pathFromUri(context: Context, uri: Uri): String? {
             // TODO handle non-primary volumes
         } else if (isDownloadsDocument(uri)) {
             getFileName(context, uri)?.let { fileName ->
-                return Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName
+                return Environment.getExternalStorageDirectory()
+                    .toString() + "/Download/" + fileName
             }
 
             var documentId = DocumentsContract.getDocumentId(uri)

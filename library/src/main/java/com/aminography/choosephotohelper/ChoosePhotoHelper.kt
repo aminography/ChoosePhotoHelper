@@ -36,7 +36,8 @@ class ChoosePhotoHelper private constructor(
     private val outputType: OutputType,
     private val callback: ChoosePhotoCallback<*>,
     private var filePath: String? = null,
-    private var cameraFilePath: String? = null
+    private var cameraFilePath: String? = null,
+    private val alwaysShowRemoveOption: Boolean? = null
 ) {
 
     /**
@@ -46,46 +47,18 @@ class ChoosePhotoHelper private constructor(
      */
     @JvmOverloads
     fun showChooser(@StyleRes dialogTheme: Int = 0) {
-        activity.apply {
-            AlertDialog.Builder(this, dialogTheme).apply {
-                setTitle(R.string.choose_photo_using)
-                setNegativeButton(R.string.action_close, null)
+        AlertDialog.Builder(activity, dialogTheme).apply {
+            setTitle(R.string.choose_photo_using)
+            setNegativeButton(R.string.action_close, null)
 
-                val items: List<Map<String, Any>> = if (!filePath.isNullOrBlank()) {
-                    mutableListOf<Map<String, Any>>(
-                        mutableMapOf(
-                            KEY_TITLE to getString(R.string.camera),
-                            KEY_ICON to R.drawable.ic_photo_camera_black_24dp
-                        ),
-                        mutableMapOf(
-                            KEY_TITLE to getString(R.string.gallery),
-                            KEY_ICON to R.drawable.ic_photo_black_24dp
-                        ),
-                        mutableMapOf(
-                            KEY_TITLE to getString(R.string.remove_photo),
-                            KEY_ICON to R.drawable.ic_delete_black_24dp
-                        )
-                    )
-                } else {
-                    mutableListOf<Map<String, Any>>(
-                        mutableMapOf(
-                            KEY_TITLE to getString(R.string.camera),
-                            KEY_ICON to R.drawable.ic_photo_camera_black_24dp
-                        ),
-                        mutableMapOf(
-                            KEY_TITLE to getString(R.string.gallery),
-                            KEY_ICON to R.drawable.ic_photo_black_24dp
-                        )
-                    )
-                }
-                val adapter = SimpleAdapter(
-                    activity,
-                    items,
-                    R.layout.simple_list_item,
-                    arrayOf(KEY_TITLE, KEY_ICON),
-                    intArrayOf(R.id.textView, R.id.imageView)
-                )
-                setAdapter(adapter) { _, which ->
+            SimpleAdapter(
+                activity,
+                createOptionsList(),
+                R.layout.simple_list_item,
+                arrayOf(KEY_TITLE, KEY_ICON),
+                intArrayOf(R.id.textView, R.id.imageView)
+            ).let {
+                setAdapter(it) { _, which ->
                     when (which) {
                         0 -> checkAndStartCamera()
                         1 -> checkAndShowPicker()
@@ -95,10 +68,10 @@ class ChoosePhotoHelper private constructor(
                         }
                     }
                 }
-                val dialog = create()
-                dialog.listView.setPadding(0, dp2px(16f).toInt(), 0, 0)
-                dialog.show()
             }
+            val dialog = create()
+            dialog.listView.setPadding(0, activity.dp2px(16f).toInt(), 0, 0)
+            dialog.show()
         }
     }
 
@@ -141,7 +114,6 @@ class ChoosePhotoHelper private constructor(
                     }
                     OutputType.BITMAP -> {
                         CoroutineScope(Dispatchers.IO).launch {
-//                            val bitmapBytes = modifyOrientationAndResize(this@apply)
                             var bitmap = BitmapFactory.decodeFile(it)
                             try {
                                 bitmap = modifyOrientationSuspending(bitmap, it)
@@ -190,11 +162,40 @@ class ChoosePhotoHelper private constructor(
         }
     }
 
+    private fun createOptionsList(): List<Map<String, Any>> {
+        return if (!filePath.isNullOrBlank() || alwaysShowRemoveOption == true) {
+            mutableListOf<Map<String, Any>>(
+                mutableMapOf(
+                    KEY_TITLE to activity.getString(R.string.camera),
+                    KEY_ICON to R.drawable.ic_photo_camera_black_24dp
+                ),
+                mutableMapOf(
+                    KEY_TITLE to activity.getString(R.string.gallery),
+                    KEY_ICON to R.drawable.ic_photo_black_24dp
+                ),
+                mutableMapOf(
+                    KEY_TITLE to activity.getString(R.string.remove_photo),
+                    KEY_ICON to R.drawable.ic_delete_black_24dp
+                )
+            )
+        } else {
+            mutableListOf<Map<String, Any>>(
+                mutableMapOf(
+                    KEY_TITLE to activity.getString(R.string.camera),
+                    KEY_ICON to R.drawable.ic_photo_camera_black_24dp
+                ),
+                mutableMapOf(
+                    KEY_TITLE to activity.getString(R.string.gallery),
+                    KEY_ICON to R.drawable.ic_photo_black_24dp
+                )
+            )
+        }
+    }
+
     private fun onPermissionsGranted(requestCode: Int) {
         when (requestCode) {
             REQUEST_CODE_TAKE_PHOTO_PERMISSION -> {
                 val storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
                 cameraFilePath = File.createTempFile(
                     SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss", Locale.getDefault()).format(Date()),
@@ -202,40 +203,38 @@ class ChoosePhotoHelper private constructor(
                     storageDir
                 ).absolutePath
 
-                intent.putExtra(
-                    MediaStore.EXTRA_OUTPUT,
-                    uriFromFile(
-                        activity,
-                        activity.application.packageName,
-                        File(cameraFilePath!!)
-                    )
-                )
-                intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, CAMERA_MAX_FILE_SIZE_BYTE)
-                when (whichSource) {
-                    WhichSource.ACTIVITY -> activity.startActivityForResult(
-                        intent,
-                        REQUEST_CODE_TAKE_PHOTO
-                    )
-                    WhichSource.FRAGMENT -> fragment?.startActivityForResult(
-                        intent,
-                        REQUEST_CODE_TAKE_PHOTO
-                    )
+                Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                    putExtra(MediaStore.EXTRA_OUTPUT, File(cameraFilePath!!).grantedUri(activity))
+                    putExtra(MediaStore.EXTRA_SIZE_LIMIT, CAMERA_MAX_FILE_SIZE_BYTE)
+                }.let {
+                    when (whichSource) {
+                        WhichSource.ACTIVITY -> activity.startActivityForResult(
+                            it,
+                            REQUEST_CODE_TAKE_PHOTO
+                        )
+                        WhichSource.FRAGMENT -> fragment?.startActivityForResult(
+                            it,
+                            REQUEST_CODE_TAKE_PHOTO
+                        )
+                    }
                 }
             }
             REQUEST_CODE_PICK_PHOTO_PERMISSION -> {
-                val intent = Intent()
-                intent.type = "image/*"
-                intent.action = Intent.ACTION_GET_CONTENT
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                when (whichSource) {
-                    WhichSource.ACTIVITY -> activity.startActivityForResult(
-                        Intent.createChooser(intent, "Choose Photo"),
-                        REQUEST_CODE_PICK_PHOTO
-                    )
-                    WhichSource.FRAGMENT -> fragment?.startActivityForResult(
-                        Intent.createChooser(intent, "Choose Photo"),
-                        REQUEST_CODE_PICK_PHOTO
-                    )
+                Intent().apply {
+                    type = "image/*"
+                    action = Intent.ACTION_GET_CONTENT
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                }.let {
+                    when (whichSource) {
+                        WhichSource.ACTIVITY -> activity.startActivityForResult(
+                            Intent.createChooser(it, "Choose a Photo"),
+                            REQUEST_CODE_PICK_PHOTO
+                        )
+                        WhichSource.FRAGMENT -> fragment?.startActivityForResult(
+                            Intent.createChooser(it, "Choose a Photo"),
+                            REQUEST_CODE_PICK_PHOTO
+                        )
+                    }
                 }
             }
         }
@@ -297,6 +296,7 @@ class ChoosePhotoHelper private constructor(
 
         private var filePath: String? = null
         private var cameraFilePath: String? = null
+        private var alwaysShowRemoveOption: Boolean? = null
 
 
         /**
@@ -305,6 +305,11 @@ class ChoosePhotoHelper private constructor(
         fun withState(state: Bundle?): BaseRequestBuilder<T> {
             filePath = state?.getString(FILE_PATH)
             cameraFilePath = state?.getString(CAMERA_FILE_PATH)
+            return this
+        }
+
+        fun alwaysShowRemoveOption(show: Boolean): BaseRequestBuilder<T> {
+            alwaysShowRemoveOption = show
             return this
         }
 
@@ -317,16 +322,18 @@ class ChoosePhotoHelper private constructor(
                     outputType,
                     callback,
                     filePath,
-                    cameraFilePath
+                    cameraFilePath,
+                    alwaysShowRemoveOption
                 )
                 WhichSource.FRAGMENT -> ChoosePhotoHelper(
-                    fragment?.requireActivity()!!,
+                    fragment!!.requireActivity(),
                     fragment,
                     which,
                     outputType,
                     callback,
                     filePath,
-                    cameraFilePath
+                    cameraFilePath,
+                    alwaysShowRemoveOption
                 )
             }
         }
