@@ -39,6 +39,7 @@ public class UsedInFragmentFragment extends Fragment {
 
         choosePhotoHelper = ChoosePhotoHelper.with(this)
                 .asFilePath()
+                .withState(savedInstanceState)
                 .build(new ChoosePhotoCallback<String>() {
                     @Override
                     public void onChoose(String photo) {
@@ -67,6 +68,12 @@ public class UsedInFragmentFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         choosePhotoHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        choosePhotoHelper.onSaveInstanceState(outState);
     }
 
     public static UsedInFragmentFragment newInstance() {
