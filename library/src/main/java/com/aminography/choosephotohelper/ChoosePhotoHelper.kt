@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.aminography.choosephotohelper
 
 import android.Manifest
@@ -196,16 +198,16 @@ class ChoosePhotoHelper private constructor(
         when (requestCode) {
             REQUEST_CODE_TAKE_PHOTO_PERMISSION -> {
                 val storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-
-                cameraFilePath = File.createTempFile(
-                    SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss", Locale.getDefault()).format(Date()),
+                val file = File.createTempFile(
+                    "JPEG_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(Date())}",
                     ".jpg",
                     storageDir
-                ).absolutePath
+                )
+                cameraFilePath = file.absolutePath
 
                 Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                    putExtra(MediaStore.EXTRA_OUTPUT, File(cameraFilePath!!).grantedUri(activity))
-                    putExtra(MediaStore.EXTRA_SIZE_LIMIT, CAMERA_MAX_FILE_SIZE_BYTE)
+                    putExtra(MediaStore.EXTRA_OUTPUT, file.grantedUri(activity))
+//                    putExtra(MediaStore.EXTRA_SIZE_LIMIT, CAMERA_MAX_FILE_SIZE_BYTE)
                 }.let {
                     when (whichSource) {
                         WhichSource.ACTIVITY -> activity.startActivityForResult(
@@ -242,9 +244,7 @@ class ChoosePhotoHelper private constructor(
 
     private fun checkAndStartCamera() {
         if (hasPermissions(activity, *TAKE_PHOTO_PERMISSIONS)) {
-            onPermissionsGranted(
-                REQUEST_CODE_TAKE_PHOTO_PERMISSION
-            )
+            onPermissionsGranted(REQUEST_CODE_TAKE_PHOTO_PERMISSION)
         } else {
             when (whichSource) {
                 WhichSource.ACTIVITY -> ActivityCompat.requestPermissions(
@@ -257,15 +257,12 @@ class ChoosePhotoHelper private constructor(
                     REQUEST_CODE_TAKE_PHOTO_PERMISSION
                 )
             }
-
         }
     }
 
     private fun checkAndShowPicker() {
         if (hasPermissions(activity, *PICK_PHOTO_PERMISSIONS)) {
-            onPermissionsGranted(
-                REQUEST_CODE_PICK_PHOTO_PERMISSION
-            )
+            onPermissionsGranted(REQUEST_CODE_PICK_PHOTO_PERMISSION)
         } else {
             when (whichSource) {
                 WhichSource.ACTIVITY -> ActivityCompat.requestPermissions(
