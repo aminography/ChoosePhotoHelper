@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.aminography.choosephotohelper.ChoosePhotoHelper
-import com.aminography.choosephotohelper.callback.ChoosePhotoCallback
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.fragment_used_in_fragment.*
@@ -31,12 +30,13 @@ class UsedInFragmentFragment : Fragment() {
 
         choosePhotoHelper = ChoosePhotoHelper.with(this)
             .asFilePath()
-            .build(ChoosePhotoCallback {
+            .withState(savedInstanceState)
+            .build {
                 Glide.with(this)
                     .load(it)
                     .apply(RequestOptions.placeholderOf(R.drawable.default_placeholder))
                     .into(imageView)
-            })
+            }
 
         button.setOnClickListener {
             choosePhotoHelper.showChooser()
@@ -55,6 +55,11 @@ class UsedInFragmentFragment : Fragment() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         choosePhotoHelper.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        choosePhotoHelper.onSaveInstanceState(outState)
     }
 
     companion object {

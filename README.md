@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.aminography:choosephotohelper:1.2.0'
+    implementation 'com.aminography:choosephotohelper:1.3.0'
 }
 ```
 
@@ -96,11 +96,11 @@ class MainActivity : AppCompatActivity() {
         choosePhotoHelper = ChoosePhotoHelper.with(this)
             .asFilePath()
             .withState(savedInstanceState)
-            .build(ChoosePhotoCallback {
+            .build {
                 Glide.with(this)
                     .load(it)
                     .into(imageView)
-            })
+            }
 
         button.setOnClickListener {
             choosePhotoHelper.showChooser()
@@ -118,9 +118,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        choosePhotoHelper.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
+        choosePhotoHelper.onSaveInstanceState(outState)
     }
+
 }
 ```
 
@@ -128,6 +129,9 @@ class MainActivity : AppCompatActivity() {
 
 Change Log
 ----------
+### Version 1.3.0
+- Migrating to Kotlin 1.4.0.
+
 ### Version 1.2.1
 - Some minor improvements.
 - Adding ability to always show remove photo option.

@@ -32,6 +32,7 @@ public class UsedInActivityActivity extends AppCompatActivity {
 
         choosePhotoHelper = ChoosePhotoHelper.with(this)
                 .asFilePath()
+                .withState(savedInstanceState)
                 .build(new ChoosePhotoCallback<String>() {
                     @Override
                     public void onChoose(String photo) {
@@ -60,6 +61,12 @@ public class UsedInActivityActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         choosePhotoHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        choosePhotoHelper.onSaveInstanceState(outState);
     }
 
 }
