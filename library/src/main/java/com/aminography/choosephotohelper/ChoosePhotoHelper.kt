@@ -148,14 +148,14 @@ class ChoosePhotoHelper private constructor(
     ) {
         when (requestCode) {
             REQUEST_CODE_TAKE_PHOTO_PERMISSION -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                     onPermissionsGranted(requestCode)
                 } else {
                     activity.toast(R.string.required_permissions_are_not_granted)
                 }
             }
             REQUEST_CODE_PICK_PHOTO_PERMISSION -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                     onPermissionsGranted(requestCode)
                 } else {
                     activity.toast(R.string.required_permission_is_not_granted)

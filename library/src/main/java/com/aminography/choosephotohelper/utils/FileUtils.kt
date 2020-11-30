@@ -38,7 +38,7 @@ fun File.grantedUri(context: Context): Uri {
  * Finds real path of the file which is addressed by the uri.
  *
  * @param context a context
- * @param uri uri to find real path
+ * @param uri content uri to find real path
  *
  * @return real path of the file addressing by the uri.
  */
